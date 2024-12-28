@@ -4,13 +4,13 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
-
 import { HomeScreen } from '../pages/HomeScreen';
 import { EventsScreen } from '../pages/EventsScreen';
 import { ChatScreen } from '../pages/ChatScreen';
 import { ChatDetailScreen } from '../pages/ChatDetailScreen';
 import { LearnScreen } from '../pages/LearnScreen';
 import { ProfileScreen } from '../pages/ProfileScreen';
+import { EditProfileScreen } from '../pages/EditProfileScreen';
 
 import { COLORS, SIZES } from '../constants/theme';
 
@@ -32,6 +32,27 @@ const ChatStack = () => {
         component={ChatDetailScreen}
         options={{
           headerBackTitle: 'Geri'
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const ProfileStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen 
+        name="ProfileMain" 
+        component={ProfileScreen}
+        options={{
+          title: 'Profilim'
+        }}
+      />
+      <Stack.Screen 
+        name="EditProfile" 
+        component={EditProfileScreen}
+        options={{
+          headerShown: false
         }}
       />
     </Stack.Navigator>
@@ -181,9 +202,9 @@ const TabNavigator = () => {
       />
       <Tab.Screen 
         name="Profilim" 
-        component={ProfileScreen}
+        component={ProfileStack}
         options={{
-          title: 'Profilim'
+          headerShown: false
         }}
       />
     </Tab.Navigator>

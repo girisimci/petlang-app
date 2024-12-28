@@ -3,6 +3,7 @@ import { StyleSheet, View, Dimensions, Image, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../constants/theme';
+import Swiper from 'react-native-deck-swiper';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -34,9 +35,9 @@ const TEMP_PROFILES = [
 ];
 
 export const HomeScreen = () => {
-  const renderCard = (profile, index) => {
+  const renderCard = (profile) => {
     return (
-      <View key={profile.id} style={[styles.card, { zIndex: TEMP_PROFILES.length - index }]}>
+      <View style={styles.card}>
         <Image
           source={{ uri: profile.petImage }}
           style={styles.petImage}
@@ -74,7 +75,17 @@ export const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.cardsContainer}>
-        {TEMP_PROFILES.map((profile, index) => renderCard(profile, index))}
+        <Swiper
+          cards={TEMP_PROFILES}
+          renderCard={(card) => renderCard(card)}
+          onSwipedLeft={() => {}}
+          onSwipedRight={() => {}}
+          cardIndex={0}
+          backgroundColor={COLORS.background}
+          stackSize={2}
+          containerStyle={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
+          cardStyle={{top: 0}}
+        />
       </View>
       <View style={styles.buttonsContainer}>
         <View style={[styles.button, styles.buttonSecondary]}>
@@ -95,12 +106,10 @@ const styles = StyleSheet.create({
   },
   cardsContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20,
+    position: 'relative',
+    marginTop: 0,
   },
   card: {
-    position: 'absolute',
     width: SCREEN_WIDTH * 0.9,
     height: SCREEN_HEIGHT * 0.7,
     borderRadius: SIZES.radius.large,

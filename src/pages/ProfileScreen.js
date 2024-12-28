@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { COLORS, SIZES } from '../constants/theme';
 
 const ProfileSection = ({ title, children }) => (
@@ -35,6 +36,33 @@ const PremiumFeature = ({ icon, title, description }) => (
 );
 
 export const ProfileScreen = ({ navigation }) => {
+  const [profileImage, setProfileImage] = useState('https://images.unsplash.com/photo-1500648767791-00dcc994a43e');
+  const [petImage, setPetImage] = useState(null);
+
+  const pickImage = async (type) => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (status !== 'granted') {
+      Alert.alert('Üzgünüz', 'Fotoğraf galerisine erişim izni gerekiyor.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      if (type === 'profile') {
+        setProfileImage(result.assets[0].uri);
+      } else {
+        setPetImage(result.assets[0].uri);
+      }
+    }
+  };
+
   const userPets = [
     {
       id: 1,
@@ -71,10 +99,15 @@ export const ProfileScreen = ({ navigation }) => {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
         <View style={styles.header}>
-          <Image
-            source={{ uri: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e' }}
-            style={styles.avatar}
-          />
+          <TouchableOpacity onPress={() => pickImage('profile')} style={styles.avatarContainer}>
+            <Image
+              source={{ uri: profileImage }}
+              style={styles.avatar}
+            />
+            <View style={styles.editIconContainer}>
+              <FontAwesome name="camera" size={16} color={COLORS.white} />
+            </View>
+          </TouchableOpacity>
           <Text style={styles.name}>Mehmet Demir</Text>
           <Text style={styles.location}>Beşiktaş, İstanbul</Text>
           {!isPremium && (
@@ -84,6 +117,22 @@ export const ProfileScreen = ({ navigation }) => {
             </TouchableOpacity>
           )}
         </View>
+
+        <ProfileSection title="Köpek Fotoğrafı Ekle">
+          <TouchableOpacity 
+            style={styles.petImageUpload} 
+            onPress={() => pickImage('pet')}
+          >
+            {petImage ? (
+              <Image source={{ uri: petImage }} style={styles.uploadedPetImage} />
+            ) : (
+              <>
+                <FontAwesome name="plus" size={24} color={COLORS.primary} />
+                <Text style={styles.uploadText}>Köpek Fotoğrafı Yükle</Text>
+              </>
+            )}
+          </TouchableOpacity>
+        </ProfileSection>
 
         <ProfileSection title="Köpeklerim">
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -151,7 +200,16 @@ export const ProfileScreen = ({ navigation }) => {
         )}
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.editButton}>
+          <TouchableOpacity 
+            style={styles.editButton}
+            onPress={() => navigation.navigate('EditProfile', {
+              profileImage,
+              petImage,
+              name: 'Mehmet Demir',
+              location: 'Beşiktaş, İstanbul',
+              bio: 'Profesyonel köpek eğitmeniyim ve iki harika dostum var. 5 yıldır köpek eğitimi veriyorum. Köpeklerle vakit geçirmeyi, onlara yeni şeyler öğretmeyi ve diğer köpek severlerle tanışmayı seviyorum.'
+            })}
+          >
             <Text style={styles.editButtonText}>Profili Düzenle</Text>
           </TouchableOpacity>
         </View>
@@ -355,5 +413,44 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: SIZES.medium,
     fontWeight: '600',
+  },
+  avatarContainer: {
+    position: 'relative',
+    marginBottom: SIZES.padding.medium,
+  },
+  editIconContainer: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    backgroundColor: COLORS.primary,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: COLORS.white,
+  },
+  petImageUpload: {
+    width: '100%',
+    height: 200,
+    backgroundColor: COLORS.background,
+    borderRadius: SIZES.radius.medium,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    borderColor: COLORS.primary,
+  },
+  uploadedPetImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: SIZES.radius.medium,
+  },
+  uploadText: {
+    marginTop: SIZES.padding.small,
+    color: COLORS.primary,
+    fontSize: SIZES.medium,
+    fontWeight: '500',
   },
 }); 
