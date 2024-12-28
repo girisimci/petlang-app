@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Alert } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { useTranslation } from 'react-i18next';
 import { COLORS, SIZES } from '../constants/theme';
 
 const ProfileSection = ({ title, children }) => (
@@ -36,6 +37,7 @@ const PremiumFeature = ({ icon, title, description }) => (
 );
 
 export const ProfileScreen = ({ navigation }) => {
+  const { t } = useTranslation();
   const [profileImage, setProfileImage] = useState('https://images.unsplash.com/photo-1500648767791-00dcc994a43e');
   const [petImage, setPetImage] = useState(null);
 
@@ -113,28 +115,12 @@ export const ProfileScreen = ({ navigation }) => {
           {!isPremium && (
             <TouchableOpacity style={styles.premiumBadge}>
               <FontAwesome name="star" size={16} color={COLORS.warning} />
-              <Text style={styles.premiumBadgeText}>Premium'a Geç</Text>
+              <Text style={styles.premiumBadgeText}>{t('profile.goPremium')}</Text>
             </TouchableOpacity>
           )}
         </View>
 
-        <ProfileSection title="Köpek Fotoğrafı Ekle">
-          <TouchableOpacity 
-            style={styles.petImageUpload} 
-            onPress={() => pickImage('pet')}
-          >
-            {petImage ? (
-              <Image source={{ uri: petImage }} style={styles.uploadedPetImage} />
-            ) : (
-              <>
-                <FontAwesome name="plus" size={24} color={COLORS.primary} />
-                <Text style={styles.uploadText}>Köpek Fotoğrafı Yükle</Text>
-              </>
-            )}
-          </TouchableOpacity>
-        </ProfileSection>
-
-        <ProfileSection title="Köpeklerim">
+        <ProfileSection title={t('pets.myPets')}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {userPets.map(pet => (
               <PetCard key={pet.id} pet={pet} />
@@ -142,13 +128,13 @@ export const ProfileScreen = ({ navigation }) => {
           </ScrollView>
         </ProfileSection>
 
-        <ProfileSection title="Hakkımda">
+        <ProfileSection title={t('profile.about')}>
           <Text style={styles.bio}>
-            Profesyonel köpek eğitmeniyim ve iki harika dostum var. 5 yıldır köpek eğitimi veriyorum. Köpeklerle vakit geçirmeyi, onlara yeni şeyler öğretmeyi ve diğer köpek severlerle tanışmayı seviyorum.
+            {t('profile.bio')}
           </Text>
         </ProfileSection>
 
-        <ProfileSection title="İlgi Alanları">
+        <ProfileSection title={t('profile.interests')}>
           <View style={styles.interestsContainer}>
             {['Köpek Eğitimi', 'Agility', 'Köpek Parkı', 'Yürüyüş'].map((interest, index) => (
               <View key={index} style={styles.interestTag}>
@@ -159,42 +145,42 @@ export const ProfileScreen = ({ navigation }) => {
           </View>
         </ProfileSection>
 
-        <ProfileSection title="İstatistikler">
+        <ProfileSection title={t('profile.statistics')}>
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
               <Text style={styles.statNumber}>150</Text>
-              <Text style={styles.statLabel}>Eşleşme</Text>
+              <Text style={styles.statLabel}>{t('profile.matches')}</Text>
             </View>
             <View style={styles.statItem}>
               <Text style={styles.statNumber}>45</Text>
-              <Text style={styles.statLabel}>Arkadaş</Text>
+              <Text style={styles.statLabel}>{t('profile.friends')}</Text>
             </View>
             <View style={styles.statItem}>
               <Text style={styles.statNumber}>12</Text>
-              <Text style={styles.statLabel}>Etkinlik</Text>
+              <Text style={styles.statLabel}>{t('profile.events')}</Text>
             </View>
           </View>
         </ProfileSection>
 
         {!isPremium && (
-          <ProfileSection title="Premium Özellikler">
+          <ProfileSection title={t('profile.premium')}>
             <PremiumFeature
               icon="heart"
-              title="Sınırsız Eşleşme"
-              description="Günlük eşleşme limitini kaldırın"
+              title={t('premium.unlimitedMatches')}
+              description={t('premium.advancedFilters')}
             />
             <PremiumFeature
               icon="filter"
-              title="Gelişmiş Filtreler"
-              description="Detaylı arama ve filtreleme özellikleri"
+              title={t('premium.advancedFilters')}
+              description={t('premium.specialBadge')}
             />
             <PremiumFeature
               icon="trophy"
-              title="Özel Rozet"
-              description="Premium üyelere özel rozet"
+              title={t('premium.specialBadge')}
+              description={t('premium.removeAds')}
             />
             <TouchableOpacity style={styles.premiumButton}>
-              <Text style={styles.premiumButtonText}>Premium'a Geç</Text>
+              <Text style={styles.premiumButtonText}>{t('profile.goPremium')}</Text>
             </TouchableOpacity>
           </ProfileSection>
         )}
@@ -207,10 +193,10 @@ export const ProfileScreen = ({ navigation }) => {
               petImage,
               name: 'Mehmet Demir',
               location: 'Beşiktaş, İstanbul',
-              bio: 'Profesyonel köpek eğitmeniyim ve iki harika dostum var. 5 yıldır köpek eğitimi veriyorum. Köpeklerle vakit geçirmeyi, onlara yeni şeyler öğretmeyi ve diğer köpek severlerle tanışmayı seviyorum.'
+              bio: t('profile.bio')
             })}
           >
-            <Text style={styles.editButtonText}>Profili Düzenle</Text>
+            <Text style={styles.editButtonText}>{t('profile.editProfile')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

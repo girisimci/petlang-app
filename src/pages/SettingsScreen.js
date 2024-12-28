@@ -1,200 +1,135 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { COLORS, SIZES } from '../constants/theme';
 
-const SettingItem = ({ icon, title, value, onPress, type = 'arrow' }) => (
+const SettingItem = ({ icon, title, onPress, value }) => (
   <TouchableOpacity style={styles.settingItem} onPress={onPress}>
     <View style={styles.settingLeft}>
-      <View style={styles.settingIcon}>
-        <FontAwesome name={icon} size={20} color={COLORS.primary} />
-      </View>
+      <FontAwesome name={icon} size={24} color={COLORS.primary} style={styles.settingIcon} />
       <Text style={styles.settingTitle}>{title}</Text>
     </View>
-    <View style={styles.settingRight}>
-      {type === 'arrow' && (
-        <FontAwesome name="chevron-right" size={16} color={COLORS.text} />
-      )}
-      {type === 'switch' && (
-        <Switch
-          value={value}
-          onValueChange={onPress}
-          trackColor={{ false: COLORS.background, true: COLORS.primary + '50' }}
-          thumbColor={value ? COLORS.primary : COLORS.text}
-        />
-      )}
-      {type === 'text' && (
-        <Text style={styles.settingValue}>{value}</Text>
-      )}
-    </View>
+    {value && <Text style={styles.settingValue}>{value}</Text>}
+    <FontAwesome name="chevron-right" size={16} color={COLORS.text} />
   </TouchableOpacity>
 );
 
-const SettingSection = ({ title, children }) => (
-  <View style={styles.section}>
-    <Text style={styles.sectionTitle}>{title}</Text>
-    {children}
-  </View>
-);
+export default function SettingsScreen() {
+  const { t, i18n } = useTranslation();
 
-export const SettingsScreen = () => {
-  const [notifications, setNotifications] = React.useState(true);
-  const [emailNotifications, setEmailNotifications] = React.useState(false);
-  const [darkMode, setDarkMode] = React.useState(false);
+  const changeLanguage = () => {
+    Alert.alert(
+      t('settings.language'),
+      t('settings.selectLanguage'),
+      [
+        {
+          text: 'English',
+          onPress: () => i18n.changeLanguage('en'),
+        },
+        {
+          text: 'Türkçe',
+          onPress: () => i18n.changeLanguage('tr'),
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.container}>
-        <SettingSection title="Hesap">
-          <SettingItem
-            icon="user"
-            title="Profil Bilgileri"
-            onPress={() => {}}
-          />
-          <SettingItem
-            icon="lock"
-            title="Güvenlik"
-            onPress={() => {}}
-          />
-          <SettingItem
-            icon="credit-card"
-            title="Ödeme Yöntemleri"
-            onPress={() => {}}
-          />
-        </SettingSection>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t('settings.title')}</Text>
+        
+        <SettingItem
+          icon="language"
+          title={t('settings.language')}
+          onPress={changeLanguage}
+          value={i18n.language === 'tr' ? 'Türkçe' : 'English'}
+        />
+        
+        <SettingItem
+          icon="bell"
+          title={t('settings.notifications')}
+          onPress={() => {}}
+        />
+        
+        <SettingItem
+          icon="lock"
+          title={t('settings.privacy')}
+          onPress={() => {}}
+        />
+        
+        <SettingItem
+          icon="question-circle"
+          title={t('settings.help')}
+          onPress={() => {}}
+        />
+        
+        <SettingItem
+          icon="info-circle"
+          title={t('settings.about')}
+          onPress={() => {}}
+        />
+      </View>
 
-        <SettingSection title="Bildirimler">
-          <SettingItem
-            icon="bell"
-            title="Uygulama Bildirimleri"
-            type="switch"
-            value={notifications}
-            onPress={() => setNotifications(!notifications)}
-          />
-          <SettingItem
-            icon="envelope"
-            title="E-posta Bildirimleri"
-            type="switch"
-            value={emailNotifications}
-            onPress={() => setEmailNotifications(!emailNotifications)}
-          />
-        </SettingSection>
-
-        <SettingSection title="Görünüm">
-          <SettingItem
-            icon="moon-o"
-            title="Karanlık Mod"
-            type="switch"
-            value={darkMode}
-            onPress={() => setDarkMode(!darkMode)}
-          />
-          <SettingItem
-            icon="language"
-            title="Dil"
-            type="text"
-            value="Türkçe"
-            onPress={() => {}}
-          />
-        </SettingSection>
-
-        <SettingSection title="Destek">
-          <SettingItem
-            icon="question-circle"
-            title="Yardım Merkezi"
-            onPress={() => {}}
-          />
-          <SettingItem
-            icon="info-circle"
-            title="Hakkında"
-            onPress={() => {}}
-          />
-          <SettingItem
-            icon="file-text-o"
-            title="Kullanım Koşulları"
-            onPress={() => {}}
-          />
-          <SettingItem
-            icon="shield"
-            title="Gizlilik Politikası"
-            onPress={() => {}}
-          />
-        </SettingSection>
-
-        <TouchableOpacity style={styles.logoutButton}>
-          <FontAwesome name="sign-out" size={20} color={COLORS.error} />
-          <Text style={styles.logoutText}>Çıkış Yap</Text>
-        </TouchableOpacity>
-      </ScrollView>
+      <TouchableOpacity style={styles.logoutButton}>
+        <Text style={styles.logoutText}>{t('settings.logout')}</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  container: {
-    flex: 1,
-  },
   section: {
-    paddingVertical: SIZES.padding.medium,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.background,
+    padding: SIZES.padding.medium,
   },
   sectionTitle: {
-    fontSize: SIZES.medium,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: SIZES.padding.small,
-    paddingHorizontal: SIZES.padding.medium,
+    fontSize: SIZES.large,
+    fontWeight: 'bold',
+    color: COLORS.black,
+    marginBottom: SIZES.padding.large,
   },
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingVertical: SIZES.padding.medium,
-    paddingHorizontal: SIZES.padding.medium,
-    backgroundColor: COLORS.white,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.background,
   },
   settingLeft: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
   },
   settingIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: COLORS.primary + '10',
-    justifyContent: 'center',
-    alignItems: 'center',
     marginRight: SIZES.padding.medium,
+    width: 24,
   },
   settingTitle: {
     fontSize: SIZES.medium,
     color: COLORS.black,
   },
-  settingRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   settingValue: {
     fontSize: SIZES.medium,
     color: COLORS.text,
-    marginRight: SIZES.padding.small,
+    marginRight: SIZES.padding.medium,
   },
   logoutButton: {
-    flexDirection: 'row',
+    margin: SIZES.padding.medium,
+    padding: SIZES.padding.medium,
+    backgroundColor: COLORS.error,
+    borderRadius: SIZES.radius.medium,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: SIZES.padding.large,
-    marginTop: SIZES.padding.medium,
   },
   logoutText: {
+    color: COLORS.white,
     fontSize: SIZES.medium,
-    color: COLORS.error,
     fontWeight: '600',
-    marginLeft: SIZES.padding.small,
   },
 }); 

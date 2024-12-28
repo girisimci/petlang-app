@@ -11,6 +11,7 @@ import { ChatDetailScreen } from '../pages/ChatDetailScreen';
 import { LearnScreen } from '../pages/LearnScreen';
 import { ProfileScreen } from '../pages/ProfileScreen';
 import { EditProfileScreen } from '../pages/EditProfileScreen';
+import SettingsScreen from '../pages/SettingsScreen';
 
 import { COLORS, SIZES } from '../constants/theme';
 
@@ -53,6 +54,14 @@ const ProfileStack = () => {
         component={EditProfileScreen}
         options={{
           headerShown: false
+        }}
+      />
+      <Stack.Screen 
+        name="Settings" 
+        component={SettingsScreen}
+        options={{
+          title: 'Ayarlar',
+          headerBackTitle: 'Geri'
         }}
       />
     </Stack.Navigator>
